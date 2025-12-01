@@ -25,6 +25,7 @@ CXXFLAGS := $(CFLAGS) #-std=c++23
 LDFLAGS = -lidbfs.js
 LDFLAGS += -s 'EXPORTED_RUNTIME_METHODS=["writeArrayToMemory","setValue"]'
 LDFLAGS += -sASYNCIFY
+LDFLAGS += $(RAYLIB_PATH)/src/libraylib.web.a
 
 #---------------------------------------------------------------------------------------------
 # Web target html container
@@ -36,7 +37,7 @@ OBJS	:= $(addprefix $(BUILD_DIR),$(SRC_FILES:$(SRC_DIR)/%=$(OBJ_DIR)/%.o))
 #---------------------------------------------------------------------------------------------
 # Specific targets
 
-$(PROJECT_NAME): $(OBJS)
+$(PROJECT_NAME): libraylib $(OBJS)
 	@mkdir -p $(OUTPUT_DIR)
 	$(CC) -o $(OUTPUT_DIR)/index.html $(OBJS) $(LDFLAGS) \
 		-s USE_GLFW=3 \
@@ -51,3 +52,15 @@ $(BUILD_DIR)/%.c.o: $(SRC_DIR)/%.c
 $(BUILD_DIR)/%.cpp.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(@D)
 	$(CC) -c $< -o $@ -D$(PLATFORM) $(CXXFLAGS)
+
+libraylib:
+ifeq ($(OS),Windows_NT)
+	@cp emar.bat emcc.bat $(RAYLIB_PATH)/src
+endif
+	make -j 8 -C $(RAYLIB_PATH)/src raylib \
+		PLATFORM=PLATFORM_WEB \
+		RAYLIB_BUILD_MODE=$(BUILD_MODE) \
+		RAYLIB_LIBTYPE=STATIC
+ifeq ($(OS),Windows_NT)
+	@rm $(RAYLIB_PATH)/src/emar.bat $(RAYLIB_PATH)/src/emcc.bat
+endif

@@ -25,8 +25,6 @@ CFLAGS += -Wunused-result
 CFLAGS += -Wunused-variable
 CFLAGS += -Wpointer-arith
 CFLAGS += -fdiagnostics-color=always
-#CFLAGS += -I$(RAYLIB_PATH)/src
-#CFLAGS += -isystem$(RAYLIB_PATH)/src
 
 ifeq ($(BUILD_MODE),RELEASE)
 CFLAGS += -DNDEBUG
@@ -34,9 +32,13 @@ CFLAGS += -O3
 CFLAGS += -pedantic
 # CFLAGS += -Werror
 else
-CFLAGS += -D_DEBUG -g
+# CFLAGS += -D_DEBUG -g
 endif
 
+#------------------------------------------------
+# Raylib Dependendy
+RAYLIB_PATH := $(LIBS_DIR)/raylib
+CFLAGS += -I$(RAYLIB_PATH)/src -isystem$(RAYLIB_PATH)/src
 
 #---------------------------------------------------------------------------------------------
 # Common Targets
@@ -45,7 +47,7 @@ endif
 clean:
 	rm -rf $(BUILD_DIR)
 	rm -rf $(OUTPUT_DIR)
-
+	make -C $(RAYLIB_PATH)/src clean
 
 #---------------------------------------------------------------------------------------------
 # Util functions
