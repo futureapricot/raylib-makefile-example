@@ -1,6 +1,5 @@
 include config.mk
 
-PLATFORM		:= PLATFORM_WEB
 CC				:= emcc
 
 #---------------------------------------------------------------------------------------------
@@ -17,7 +16,8 @@ CFLAGS += --profiling
 CFLAGS += -O0 # -Og doesn not work in emcc
 endif
 
-CXXFLAGS := $(CFLAGS) #-std=c++23
+CFLAGS		+= -DPLATFORM_WEB
+CXXFLAGS	:= $(CFLAGS) #-std=c++23
 # CFLAGS	+= -std=gnu23
 
 #---------------------------------------------------------------------------------------------
@@ -47,11 +47,11 @@ $(PROJECT_NAME): libraylib $(OBJS)
 
 $(BUILD_DIR)/%.c.o: $(SRC_DIR)/%.c
 	@mkdir -p $(@D)
-	$(CC) -c $< -o $@ -D$(PLATFORM) $(CFLAGS)
+	$(CC) -c $< -o $@ $(CFLAGS)
 
 $(BUILD_DIR)/%.cpp.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(@D)
-	$(CC) -c $< -o $@ -D$(PLATFORM) $(CXXFLAGS)
+	$(CC) -c $< -o $@ $(CXXFLAGS)
 
 libraylib:
 ifeq ($(OS),Windows_NT)
@@ -60,7 +60,8 @@ endif
 	make -j 8 -C $(RAYLIB_PATH)/src raylib \
 		PLATFORM=PLATFORM_WEB \
 		RAYLIB_BUILD_MODE=$(BUILD_MODE) \
-		RAYLIB_LIBTYPE=STATIC
+		RAYLIB_LIBTYPE=STATIC \
+		$(if $(filter $(BUILD_MODE),RELEASE), 2>/dev/null)
 ifeq ($(OS),Windows_NT)
 	@rm $(RAYLIB_PATH)/src/emar.bat $(RAYLIB_PATH)/src/emcc.bat
 endif
