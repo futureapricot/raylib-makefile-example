@@ -1,7 +1,7 @@
 include config.mk
 
 CC				:= gcc
-CXXFLAGS		:= g++
+CXX				:= g++
 
 #---------------------------------------------------------------------------------------------
 BUILD_DIR		:= $(call lc,$(BUILD_DIR)/$(DETECTED_OS)/$(BUILD_MODE))
@@ -53,7 +53,7 @@ $(BUILD_DIR)/%.c.o: $(SRC_DIR)/%.c
 
 $(BUILD_DIR)/%.cpp.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(@D)
-	$(CC) -c $< -o $@ $(CXXFLAGS)
+	$(CXX) -c $< -o $@ $(CXXFLAGS)
 
 libraylib:
 	make -j 8 -C $(RAYLIB_PATH)/src raylib \
